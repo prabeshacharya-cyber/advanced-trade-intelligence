@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; }
+  body {
+    @apply bg-bg text-text font-sans;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+  h1, h2, h3, h4 { letter-spacing: -0.3px; }
+}
+
+@layer components {
+  .card {
+    @apply bg-card border border-border/60 rounded-2xl p-4;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.5), 0 4px 16px rgba(0,0,0,0.25);
+  }
+  .card-inner {
+    @apply bg-card2 border border-border/40 rounded-xl p-3;
+  }
+  .sub {
+    @apply text-sm text-muted mt-1 leading-relaxed;
+  }
+  .pill {
+    @apply px-3 py-1 rounded-full text-sm font-medium transition-all;
+  }
+  .pill-active {
+    @apply bg-bull/15 text-bull;
+  }
+  .pill-inactive {
+    @apply text-muted hover:text-text;
+  }
+  .glass {
+    background: rgba(28,28,30,0.7);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .score-bar-track {
+    @apply w-full h-1 rounded-full;
+    background: rgba(255,255,255,0.06);
+  }
+  .score-bar-fill {
+    @apply h-1 rounded-full transition-all duration-500;
+  }
+}
+
+@layer utilities {
+  .tracking-tight { letter-spacing: -0.3px; }
+  .tracking-tighter { letter-spacing: -0.5px; }
+}

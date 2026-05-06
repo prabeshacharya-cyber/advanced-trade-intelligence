@@ -1,0 +1,159 @@
+You are working on the APEX Financial Intelligence Platform. The repo layout is:
+
+- /apex-web              → React 18 + Vite + Tailwind v3 + Recharts frontend (this is what you'll edit most)
+- /app.py, /market_data.py, /alert_engine.py → Python Flask backend (live prices via yfinance)
+- /server.js             → Node Express AI proxy (Gemini/OpenAI)
+
+The live app is at https://financial-modelling.replit.app. It's a private, dark-mode, data-dense market-intelligence tool for traders. Do NOT change product scope, data sources, or AI logic. Only execute the UX, UI, mobile, performance, SEO, and accessibility improvements below.
+
+Work through the items in order. For each numbered item:
+1. Make the change.
+2. Tell me which files you touched and a 1-line summary.
+3. STOP and wait for me to say "next" before starting the following item.
+
+Use semantic Tailwind tokens via a small design-system file (extend tailwind.config.js theme). Do NOT scatter raw hex colors in components. Keep diffs minimal — don't refactor unrelated code.
+
+================================================================
+P0 — SHIP-STOPPERS
+================================================================
+
+1. MOBILE NAVIGATION (currently only 5 of ~14 sections reachable on phone)
+   - Replace the bottom tab bar with: 4 primary tabs (Dashboard, Scanner, Planner, Journal) + a 5th "More" tab.
+   - "More" opens a full-screen sheet/drawer that mirrors the desktop sidebar groups exactly: MARKET, AI INTELLIGENCE, TRADER TOOLS, ACCOUNT.
+   - Every nav item from the desktop sidebar must be reachable on mobile.
+   - Use a slide-up sheet animation, 200ms ease-out. Tapping outside or a nav item closes it.
+   - Touch targets ≥ 44px. Active route is highlighted.
+   - File: apex-web/src/components/Layout.jsx (and a new MobileNavSheet.jsx if helpful).
+
+2. SIGN-IN PAGE REDESIGN
+   - Replace the generic "A" gradient tile with a real APEX wordmark (use Geist or Inter Bold, letter-spacing -0.02em, with a small accent dot).
+   - Remove the duplicated "Market Intelligence · Private Access" tagline (keep it once, under the logo only).
+   - Fix the Sign In button: full-opacity primary color, white text, clear hover/active/focus-visible states. It currently looks disabled.
+   - Add a split layout on ≥1024px: form on the left, a muted product preview panel on the right (a static screenshot of the dashboard with subtle gradient overlay is fine).
+   - Add a one-line disclaimer at the bottom of the form: "AI research tool · Not financial advice."
+   - On mobile, stack: logo → tagline → form. Center vertically.
+
+3. TRUST + COMPLIANCE LAYER
+   - Create a small <AIDisclaimer /> component: "AI-generated · Not financial advice" with an info icon.
+   - Render it under every AI output: AI Chat replies, Top 20 Scorer cards, Deep Research results, Trade Planner outputs, Morning Briefing, "Get AI Insight" buttons.
+   - Add a <DataAttribution /> component: "Source: Yahoo Finance · Updated HH:MM:SS ET" — render under every numeric card on Dashboard, Top 20 Scorer, Portfolio.
+   - The timestamp must be real (use the actual fetch time from the API response).
+
+4. PAGE METADATA + FAVICON
+   - In apex-web/index.html: real <title> ("APEX — Private Market Intelligence"), meta description, theme-color #0a0a0a, og:title, og:description, og:image (a 1200x630 PNG with logo + tagline on dark bg — generate or stub it).
+   - Add favicon.svg + favicon.ico + apple-touch-icon.png in apex-web/public/.
+   - Set lang="en" on <html>. Add a viewport meta tag with viewport-fit=cover.
+
+================================================================
+P1 — VISUAL POLISH
+================================================================
+
+5. TYPOGRAPHY SYSTEM
+   - Install fonts via @fontsource/inter and @fontsource/jetbrains-mono (or Geist + Geist Mono).
+   - In tailwind.config.js, set font-sans: Inter and font-mono: JetBrains Mono.
+   - Apply font-mono with `tabular-nums` to ALL numeric displays: prices, percentages, scores, share counts, P&L, VIX, etc. Search the codebase for `$`, `%`, and price formatting.
+   - Define a type scale: text-[11px] (label), text-xs (caption), text-sm (body), text-base, text-lg (subhead), text-xl, text-2xl, text-3xl. Weights: 400 / 500 / 600 only.
+   - Section labels ("MARKET", "AI INTELLIGENCE", "SECTOR HEAT MAP", "ECONOMIC CALENDAR"): text-[11px], tracking-[0.08em], uppercase, text-muted-foreground/80.
+
+6. COLOR SYSTEM
+   - In tailwind.config.js extend colors with semantic tokens:
+       background: '#0a0a0a' (page), surface: '#111113' (card), elevated: '#16161a' (popover/hover), border: '#1f1f24', muted-foreground: '#8a8a93', foreground: '#ededf0'
+       bull (green): '#22c55e' on text, with bg variant '#052e16/60'
+       bear (red):   '#ef4444' on text, with bg variant '#3f0a0a/60'
+       neutral:      '#a1a1aa'
+       accent (AI):  '#a78bfa' — use ONLY for AI-related UI (Gemini badge, AI buttons, AI section header dot). Nothing else.
+   - Replace pure black backgrounds with `bg-background` and the card tone with `bg-surface`. Add a 1px `border-border` to every card so depth is visible.
+   - For numeric cells with bull/bear colors, add a subtle tinted background pill: bg-bull/10 or bg-bear/10. Easier to scan tables.
+
+7. SECTOR HEAT MAP — TURN INTO A REAL TREEMAP
+   - Currently it's a list of colored text. Replace with a Recharts <Treemap />.
+   - Rectangle area = each sector's % of S&P 500 weight (already in your data).
+   - Color = % change, mapped through bull/bear with intensity proportional to magnitude (cap at ±3%).
+   - Each tile shows: sector name (bold), % change (mono), weight (small).
+   - Tooltip on hover shows full details.
+   - File: apex-web/src/pages/Pages.jsx (Dashboard).
+
+8. TOP 20 SCORER — DENSE TABLE VIEW
+   - Add a view toggle at the top: "Cards" (current) / "Table" (new, default on ≥1024px).
+   - Table columns: Rank, Ticker, Name, Type, Price, Change %, Score (with a small horizontal bar 0–10), Action (Buy/Hold/Sell badge), Entry/Target/Stop (compact), R/R, Volume vs avg, [Get AI Insight button].
+   - Sortable headers. Sticky header on scroll. Row hover highlight. Click row → expand to show the 6 sub-score bars (Momentum, Volume, Technical, Sentiment, Fundamentals, News).
+   - Use mono font for all numbers. Tabular alignment.
+
+9. DASHBOARD VISUAL UPGRADES
+   - Fear & Greed: replace the flat progress bar with a radial arc gauge (Recharts RadialBarChart, semicircle, colored zones). Show the numeric value large in the center.
+   - Volatility card: add a 30-day VIX sparkline (Recharts <LineChart> in a small card area, no axes, just the line).
+   - Index cards (S&P, NASDAQ, DOW): add a 1-day intraday sparkline above the price.
+
+10. PORTFOLIO ROW UPGRADES
+    - Each holding gets a 30-day price sparkline on the right.
+    - Add a horizontal P&L bar (full width = max abs P&L across holdings) so you can visually compare positions.
+    - Replace the destructive red "Remove" button with a subtle ghost button + confirm dialog. Currently it's the most attention-grabbing thing on the page.
+
+11. ROUTE TRANSITIONS + MICRO-INTERACTIONS
+    - Add framer-motion. Wrap the main content area in <AnimatePresence> with a 150ms fade + 4px y-translate on route change.
+    - Buttons get hover (bg lighten 4%), active (scale 0.98), focus-visible (2px ring ring-accent ring-offset-2 ring-offset-background).
+    - When a price ticks via the auto-refresh, briefly flash the cell background (bull or bear at 15% opacity for 400ms).
+
+================================================================
+P2 — UX + INFORMATION ARCHITECTURE
+================================================================
+
+12. CLICKABLE TICKERS EVERYWHERE
+    - Wherever a ticker symbol appears (Dashboard, Top 20, Portfolio, AI Chat citations, Insider Tracker, Earnings, Sentiment), render it as a button that opens Deep Research pre-loaded with that ticker.
+    - Style: mono, slight underline on hover, cursor-pointer.
+
+13. ⌘K COMMAND PALETTE
+    - Add `cmdk` package. Bind ⌘K / Ctrl+K to open.
+    - Commands: navigate to any of the ~14 sections, search ticker → Deep Research, "Generate Live Briefing", "New trade plan", toggle theme (if added), sign out.
+    - Recent searches persisted to localStorage.
+
+14. ONBOARDING / EMPTY STATES
+    - Trade Planner: pre-fill a worked example (Account 25k, Risk 1%, Entry 100, Stop 95, Target 115) and show the resulting position size live. Add a "Reset" button.
+    - Deep Research: below the input, show a sample report (collapsed) with a label "Example output — type a ticker above to generate your own."
+    - Portfolio: if the loaded positions look like seed data (NVDA -73% drawdown is suspicious), label the section "Sample portfolio" with a "Clear and start mine" button.
+
+15. MICROCOPY POLISH
+    - Top 20 score blurb "Mixed: some positives, some negatives, so size smaller" repeats verbatim across cards. Make it deterministic from the actual sub-scores (e.g. "Strong fundamentals (98), weak volume (23) — wait for confirmation.").
+    - Add hover tooltips on jargon: R/R, VWAP, VIX, Fear & Greed, Dark Pool. One-sentence plain-English explainers.
+
+16. KEYBOARD SHORTCUTS
+    - `g d` Dashboard, `g s` Scanner, `g p` Planner, `g j` Journal, `g a` AI Chat, `g r` Deep Research, `g t` Top 20.
+    - `/` focuses the global search field.
+    - `?` opens a keyboard shortcuts modal.
+
+================================================================
+P3 — PERFORMANCE / SEO / A11Y
+================================================================
+
+17. LOADING + STREAMING
+    - Add skeleton components for: Dashboard cards, Top 20 rows, Portfolio rows, Deep Research result. Render skeletons while data is fetching instead of empty space.
+    - For AI responses (Chat, Deep Research, Briefing): stream tokens to the UI as they arrive from /server.js. If the server isn't already streaming, add SSE / chunked response support.
+
+18. CODE-SPLITTING
+    - Split each top-level page into its own dynamic import (React.lazy + Suspense). The dashboard should not bundle the AI Chat or Deep Research code.
+
+19. ACCESSIBILITY PASS
+    - Convert sidebar nav <button> elements into real <a href> (or React Router <Link>) so middle-click, copy-link, and screen readers work.
+    - Add a skip-to-content link (sr-only, visible on focus) at the top of <body>.
+    - All form inputs need visible focus rings (2px ring-accent, ring-offset-2, ring-offset-background).
+    - Bump muted-foreground contrast to ≥ 4.5:1 on background.
+    - AI streaming output containers get `aria-live="polite"` so screen readers announce updates.
+    - Audit color-only signals (P&L green/red): add a small ▲/▼ glyph alongside.
+
+20. SEO + SHAREABILITY
+    - Create public marketing routes that DON'T require login: /, /about, /security, /pricing (placeholder is fine). The sign-in form moves to /signin.
+    - Each route gets its own <title>, meta description, OG tags.
+    - Add JSON-LD <script type="application/ld+json"> with SoftwareApplication schema on /.
+    - Add robots.txt and sitemap.xml in apex-web/public/.
+
+================================================================
+RULES OF ENGAGEMENT
+================================================================
+
+- Don't change Python backend logic, AI prompts, scoring math, or data sources.
+- Don't add new dependencies beyond: framer-motion, cmdk, @fontsource/inter, @fontsource/jetbrains-mono. (Recharts is already installed.)
+- Don't introduce TypeScript — keep .jsx.
+- Test on mobile (390x844), tablet (768x1024), and desktop (1440x900) after each item.
+- After each numbered item, STOP and wait for "next".
+
+Start with item 1.

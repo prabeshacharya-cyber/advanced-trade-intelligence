@@ -1,0 +1,91 @@
+modules = ["python-3.12", "nodejs-20", "web"]
+[agent]
+expertMode = true
+stack = "BEST_EFFORT_FALLBACK"
+integrations = ["github:1.0.0", "resend:1.0.0"]
+
+[nix]
+channel = "stable-25_05"
+packages = ["glibcLocales"]
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Start application"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Expo Mobile App"
+
+[[workflows.workflow]]
+name = "Start application"
+author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd ati && npm run dev"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "Expo Mobile App"
+author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd apex-mobile && npx expo start --web --port 8000"
+waitForPort = 8000
+
+[[ports]]
+localPort = 3000
+externalPort = 3000
+
+[[ports]]
+localPort = 3001
+externalPort = 4200
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[[ports]]
+localPort = 5001
+externalPort = 3001
+
+[[ports]]
+localPort = 5002
+externalPort = 3003
+
+[[ports]]
+localPort = 8000
+externalPort = 8000
+
+[[ports]]
+localPort = 8081
+externalPort = 8081
+
+[deployment]
+deploymentTarget = "autoscale"
+build = ["bash", "-c", "cd apex-web && npm install && npm run build"]
+run = ["node", "server.js"]
+
+[userenv]
+
+[userenv.shared]
+APEX_PASSWORD = "Smyrn@0101"
+
+[postMerge]
+path = "scripts/post-merge.sh"
+timeoutMs = 120000

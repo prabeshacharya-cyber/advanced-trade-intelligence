@@ -1,0 +1,26 @@
+{
+  "users": [
+    {
+      "id": "27df715f-570b-48c4-b069-1b5b8f9daf18",
+      "name": "Test User",
+      "email": "testuser@example.com",
+      "passwordHash": "dbca2d528ac6db28ee52c6cce8314672cde608c28cd0b0012f29bb2866ed211033d729786d658c9ecb389daa7206daef7b3f70b6287dc8f7c6f4f04c8ce019d7",
+      "salt": "442c847ac78a192635a6daf701ccd3f2",
+      "status": "approved",
+      "approvalToken": null,
+      "createdAt": "2026-04-28T16:39:33.293Z",
+      "approvedAt": "2026-04-28T16:40:21.598Z"
+    },
+    {
+      "id": "7f91b535-caff-425f-8ab9-1785d67c3ded",
+      "name": "Test",
+      "email": "test@test.com",
+      "passwordHash": "5ce16e0f2e47181babab632b36a9ea88065ac493c771864e6215cbe86fea242a812ddf82024f653646aa38dfd2c35b3b65f5d8ff53a466f1829ebfb665cbbc04",
+      "salt": "623b53bd94232df858c225456176d0eb",
+      "status": "approved",
+      "approvalToken": null,
+      "createdAt": "2026-04-28T19:43:08.737Z",
+      "approvedAt": "2026-04-28T19:43:30.073Z"
+    }
+  ]
+}

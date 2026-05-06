@@ -1,0 +1,58 @@
+{
+  "expo": {
+    "name": "ATI",
+    "slug": "advanced-trade-intelligence",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "ati",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.ati.intelligence",
+      "userInterfaceStyle": "dark",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/icon.png",
+        "backgroundColor": "#000000"
+      },
+      "package": "com.ati.intelligence",
+      "versionCode": 1,
+      "edgeToEdgeLayoutEnabled": true,
+      "softwareKeyboardLayoutMode": "pan",
+      "userInterfaceStyle": "dark",
+      "permissions": []
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/icon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "110acdbd-a589-4fa7-ab52-3cbeeaa803ab"
+      }
+    },
+    "owner": "dreamzentrue"
+  }
+}

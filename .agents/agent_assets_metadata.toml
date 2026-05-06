@@ -1,0 +1,25 @@
+uploads = []
+
+[[generated]]
+id = "lg96r1MQDggauXys0LECv"
+uri = "file://apex-mobile/assets/images/icon.png"
+type = "image"
+title = "APEX mobile app icon"
+
+[[generated]]
+id = "sxgKFI_TYpKWf7SjRlwgk"
+uri = "file://apex-mobile/assets/images/splash.png"
+type = "image"
+title = "APEX splash screen"
+
+[[outputs]]
+id = "4K-Ds0cMs9gBztBFDnOd_"
+uri = "file://APEX_MASTER_PROMPT.md"
+type = "text"
+title = "APEX Master Prompt"
+
+[[outputs]]
+id = "zL0jpJOWsyvI_9NhuIgj_"
+uri = "file://expo-qr.png"
+type = "image"
+title = "Expo Go QR Code"

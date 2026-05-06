@@ -1,0 +1,127 @@
+Refine the APEX Dashboard for mobile readability. Scope: Dashboard route 
+ONLY (apex-web/src/pages/Dashboard.jsx and its child cards). Do NOT touch 
+other routes, nav, or backend. Mobile-first — verify at 390x844 first, 
+then 768, then 1440.
+
+============================================================
+1. SPACING SYSTEM (apply to Dashboard only, via Tailwind classes)
+============================================================
+Define and use ONE scale. No arbitrary values.
+  - Page padding:        px-4 py-3   (mobile)  →  md:px-6 md:py-5  →  lg:px-8 lg:py-6
+  - Card outer gap:      gap-3       (mobile)  →  md:gap-4         →  lg:gap-5
+  - Card inner padding:  p-4         (mobile)  →  md:p-5
+  - Section header → first row gap:  mt-3 mb-2 (mobile) → md:mt-4 md:mb-3
+  - Between metric label and value: mb-1 (never 0, never 8+)
+Remove every existing inconsistent padding (p-3, p-6, p-7, px-5, etc.) on 
+Dashboard cards and replace with the scale above.
+
+============================================================
+2. TYPOGRAPHY HIERARCHY
+============================================================
+Install if missing:
+  bun add @fontsource/inter @fontsource-variable/jetbrains-mono
+Import in apex-web/src/main.jsx:
+  import '@fontsource/inter/400.css'
+  import '@fontsource/inter/500.css'
+  import '@fontsource/inter/600.css'
+  import '@fontsource-variable/jetbrains-mono'
+
+Add to tailwind.config.js fontFamily:
+  sans: ['Inter', 'system-ui', 'sans-serif'],
+  mono: ['"JetBrains Mono Variable"', 'ui-monospace', 'monospace'],
+
+Apply this exact scale on Dashboard:
+  - Section label (e.g. "MARKET OVERVIEW"):
+      text-[11px] font-semibold tracking-[0.08em] uppercase text-zinc-400
+  - Card title (e.g. "S&P 500"):
+      text-sm font-medium text-zinc-300
+  - Primary metric (the big number, e.g. "5,847.20"):
+      text-2xl md:text-3xl font-semibold font-mono tabular-nums text-white tracking-tight
+  - Delta (e.g. "+1.24%"):
+      text-sm font-medium font-mono tabular-nums  
+      (color: green-400 / red-400 / zinc-400)
+  - Secondary metric (volume, range):
+      text-xs font-mono tabular-nums text-zinc-400
+  - Body / description:
+      text-sm leading-relaxed text-zinc-300
+  - Timestamp / disclaimer:
+      text-[11px] text-zinc-500
+
+EVERY number on the Dashboard MUST use font-mono tabular-nums. No exceptions
+(prices, %, scores, counts, timestamps in HH:MM).
+
+============================================================
+3. MOBILE LAYOUT FIXES (390 width)
+============================================================
+- Index cards (S&P, NASDAQ, DOW, RUSSELL): change from horizontal scroll 
+  to a 2-column grid on mobile (grid-cols-2), 4-column on md+.
+- Sector Heat Map: on mobile, render as a vertical list of bars 
+  (sector name left, % right, bar fills behind). Treemap only at md+.
+- Fear & Greed gauge: full-width on mobile, half-width on md+.
+- Economic Calendar: collapse to "Today only" on mobile with a 
+  "View week" link; show full week on md+.
+- Sticky page header on mobile (h-12, backdrop-blur, border-b border-zinc-800)
+  showing "Dashboard" + last-refresh timestamp.
+
+============================================================
+4. LOADING STATES (skeletons, not spinners)
+============================================================
+Create apex-web/src/components/Skeleton.jsx:
+  export function Skeleton({ className = '' }) {
+    return <div className={`animate-pulse rounded-md bg-zinc-800/60 ${className}`} />
+  }
+
+For each Dashboard card, build a matching <CardSkeleton /> with the SAME 
+height and inner block layout as the loaded card (so there's no layout shift). 
+Examples:
+  - Index card skeleton: title bar (h-3 w-16), value bar (h-7 w-24), 
+    delta bar (h-3 w-14)
+  - Sector list skeleton: 11 rows of h-6 with alternating widths
+  - Gauge skeleton: a h-32 w-32 rounded-full bg-zinc-800/60
+
+Show skeletons while data === null. Replace with real card on first paint. 
+Never show a spinner in a card.
+
+============================================================
+5. EMPTY / DEMO STATES
+============================================================
+- If a card has no data after load (data === [] or null after fetch settled):
+    Show: dim icon (lucide, h-8 w-8 text-zinc-600), 
+          "No data yet" (text-sm text-zinc-400), 
+          "Check back at market open" (text-xs text-zinc-500).
+    Center vertically in the card. Do NOT collapse the card height.
+- For the demo account (user.is_demo === true), add a one-line subtitle 
+  under the page title: 
+    "Sample data · refreshed every 60s" (text-xs text-amber-400/80)
+- For Sector Heat Map empty state: show a faded grid of 11 zinc-800 
+  rectangles (the shape teaches users what will appear).
+
+============================================================
+6. ACCESSIBILITY & MOTION
+============================================================
+- All numeric updates: add a 400ms background flash 
+  (bg-green-500/10 or bg-red-500/10) when value changes. Use a small 
+  useFlashOnChange(value) hook.
+- Respect prefers-reduced-motion: skip the flash + skeleton pulse.
+- Bump muted text from current zinc-500 to zinc-400 wherever it's on 
+  zinc-950 (contrast was failing 4.5:1).
+- Add aria-live="polite" to the index cards container so screen readers 
+  announce updates.
+
+============================================================
+7. VERIFICATION (paste back, do not skip)
+============================================================
+After deploying, capture and share:
+  a. Screenshots at 390x844, 768x1024, 1440x900 of:
+     - Dashboard fully loaded
+     - Dashboard mid-load (skeletons visible) — throttle network to 
+       Slow 3G in devtools to capture this
+     - Dashboard with one card forced into empty state
+  b. Lighthouse mobile score for /dashboard (Performance + Accessibility).
+     Accessibility must be ≥95.
+  c. Confirm: every visible number on the Dashboard is rendered in 
+     JetBrains Mono with tabular-nums (zoom into a screenshot to prove).
+
+Do NOT proceed to other routes. Do NOT refactor unrelated components. 
+If any item conflicts with existing code, stop and ask before changing 
+shared utilities.

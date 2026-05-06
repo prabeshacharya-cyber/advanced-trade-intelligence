@@ -1,0 +1,9 @@
+node_modules/
+client/node_modules/
+client/dist/
+.cache/
+*.log
+.env
+ati.db
+data/
+.local/

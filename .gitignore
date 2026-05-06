@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.cache/
+.upm/
+.local/
+.replit_integration_files/
+*.log
+.env
+data/podcasts/*.mp3
+*.db-shm
+*.db-wal

@@ -1,0 +1,30 @@
+{
+  "cli": {
+    "version": ">= 16.0.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://42b4c70a-77be-46ba-aa65-812106cb3296-00-3cccyh1zc8ah8.spock.replit.dev"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://42b4c70a-77be-46ba-aa65-812106cb3296-00-3cccyh1zc8ah8.spock.replit.dev"
+      }
+    },
+    "production": {
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://YOUR_PRODUCTION_URL_HERE"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
